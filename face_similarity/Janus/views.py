@@ -7,4 +7,4 @@ class IndexView(TemplateView):
     template_name = 'Janus/index.html'
 
 class Janus_API():
-    
+    pass
