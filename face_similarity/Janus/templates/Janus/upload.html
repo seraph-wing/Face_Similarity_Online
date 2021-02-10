@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<h3>enter the files here!</h3>
+  <form class="main_upload_area" method="post" enctype="multipart/form-data" %}>
+    {% csrf_token %}
+    {{ form|crispy }}
+    <input type="submit" value="Submit">
+  </form>
+{% endblock content %}

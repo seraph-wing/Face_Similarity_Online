@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+  <div class="container-fluid jumbotron">
+    <a href="https://github.com/seraph-wing/Face_Similarity_Online" class="btn btn-primary">Github repo</a>
+    <a href="{% url 'janus:upload' %}" class="btn btn-outline-primary">Check Score!</a>
+  </div>
+{% endblock content %}
