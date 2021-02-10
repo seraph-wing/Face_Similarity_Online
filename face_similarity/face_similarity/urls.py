@@ -17,8 +17,9 @@ from django.contrib import admin
 from django.urls import path,include
 from. import settings
 from django.conf.urls.static import static
-
+from django.views.generic.base import RedirectView
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('janus/',include('Janus.urls'),name='janus'),
+    path('',RedirectView.as_view(url='janus/'),name='index'),
+    path('janus/',include('Janus.urls')),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
