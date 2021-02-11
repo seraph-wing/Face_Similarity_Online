@@ -8,7 +8,22 @@ from datetime import datetime
 import os
 # Create your views here.
 
-
+def save_to_sys(files,k,path):
+    """
+    utility function to save posted files to system for processing by ML code
+    files: request.files list
+    k: id of cluster
+    path: path to be saved to
+    """
+    for (i,f) in enumerate(files):
+        try:
+            #print(f)
+            im = Image.open(f)
+            #print(path + '/cluster1_'+str(i)+'.jpg')
+            im.save(path + '/cluster_'+str(k)+'_'+str(i)+'.jpg')  # Do something with each file.
+            im.close()
+        except Exception as e:
+            print(e)
 class IndexView(TemplateView):
     template_name = 'Janus/index.html'
 
@@ -19,22 +34,7 @@ class FileFieldView(FormView):
     form_class = FileFieldForm
     template_name = 'Janus/upload.html'  # Replace with your template.
     success_url = reverse_lazy('janus:home')  # Replace with your URL or reverse().
-    def save_to_sys(self,files,k,path):
-        """
-        utility function to save posted files to system for processing by ML code
-        files: request.files list
-        k: id of cluster
-        path: path to be saved to
-        """
-        for (i,f) in enumerate(files):
-            try:
-                #print(f)
-                im = Image.open(f)
-                #print(path + '/cluster1_'+str(i)+'.jpg')
-                im.save(path + '/cluster_'+str(k)+'_'+str(i)+'.jpg')  # Do something with each file.
-                im.close()
-            except Exception as e:
-                print(e)
+
     def post(self, request, *args, **kwargs):
         form_class = self.get_form_class()
         form = self.get_form(form_class)
