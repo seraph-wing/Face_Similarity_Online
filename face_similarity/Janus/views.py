@@ -6,6 +6,7 @@ from django.urls import reverse_lazy
 from PIL import Image
 from datetime import datetime
 import os
+from . import preprocessing
 # Create your views here.
 
 def save_to_sys(files,k,path):
@@ -48,7 +49,9 @@ class FileFieldView(FormView):
             save_to_sys(files1,1,path)
             save_to_sys(files2,2,path)
             #PROCESSING, TO BE PROCESSED BY THE ml CODE AND CLUSTERS MADE
-
+            face_lists = preprocessing.get_face_list(path)
+            dataset = preprocessing.create_dataset(face_lists)
+            clustered_faces = preprocessing.get_clustered_faces(dataset)
             #SEND THE RESPECTIVE CLUSTERS BACK FOR USERS TO CHOOSE
 
             #GET CHOICES AND FIND SIMILARITY BETWEEN THEM

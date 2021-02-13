@@ -8,7 +8,7 @@ import face_recognition
 import pickle
 from sklearn.cluster import DBSCAN
 from imutils import build_montages
-from keras.applications import xception
+
 
 def get_face_list(path):
     """
@@ -37,22 +37,28 @@ def create_dataset(face_list):
     by the user in which are path locations for images to be processed
     """
     data=[]
-    model = Xception(weights="imagenet",include_top=False)
+    d=[]
     #getting encodings for first set of images
     for (i,imagePath) in enumerate(face_list):
       print('Processing image {}/{}:'.format(i,len(face_list)))
-      #print(imagePath)
+      print(imagePath)
+      #img = face_recognition.load_image_file(imagePath)
       img = cv2.imread(imagePath)
+      #print(img.shape)
+      #print("Image:",type(img))
       rgb = cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
-      rgb = get_normalized(rgb)
-      boxes = face_recognition.face_locations(rgb)
-      encodings = face_recognition.face_encodings(rgb, boxes)
-      d = [{"imagePath": imagePath, "loc": box, "encoding": enc}
-           for (box, enc) in zip(boxes, encodings)]
-           #as there can be multiple faces in an image,
-           #unzipping them all and adding the encodings
+      img = get_normalized(rgb)
+      #print("Image:",type(img))
+      boxes = face_recognition.face_locations(img)
+      #print("Boxes: ",boxes)
+      encodings = face_recognition.face_encodings(img, boxes)
+      #print("Encodings: ",encodings)
+      for (box, enc) in zip(boxes, encodings):
+          d.append({"imagePath": imagePath, "loc": box, "encoding": enc})
+      #print(d)
       data.extend(d)
-    print('Total faces detected from both sets of images:',len(data[0]['encoding']))
+    #print(len(data))
+    #print('Total faces detected from both sets of images:',len(data[0]['encoding']))
     return data
 
 
@@ -62,7 +68,7 @@ def get_clustered_faces(data):
     """
     encodings = [d["encoding"] for d in data]
     print("[INFO] Clustering...")
-    clt = DBSCAN(eps=0.38, metric ='euclidean')
+    clt = DBSCAN(eps = 0.5, metric ='euclidean')
     clt.fit(encodings)
     #finding number of unique faces found
     labelIDs = np.unique(clt.labels_)
@@ -71,7 +77,7 @@ def get_clustered_faces(data):
     #================GETTING THE CLUSTERED FACES===============================
     clustered_faces = []
     for labelID in labelIDs:
-      print("[INFO] Faces for face ID :{}".format(labelID))
+      #print("[INFO] Faces for face ID :{}".format(labelID))
       indexes = np.where(clt.labels_ == labelID)[0]
       faces = []
       for i in indexes:
@@ -84,7 +90,7 @@ def get_clustered_faces(data):
         faces.append(d)#contains face+encoding of same cluster
       clustered_faces.append(faces)
     #==========CREATING THE MONTAGE========================
-    montage_path = 'D:/Public projects/ML web apps/Face similarity/Face_Similarity_Online/face_similarity/media/'
+    montage_path = 'D:/Public projects/ML web apps/Face similarity/Face_Similarity_Online/face_similarity/media/montages'
     for labelID in labelIDs:
       #print(f'[INFO] faces for face ID {labelID}')
       idxs = np.where(clt.labels_ == labelID)[0]
@@ -98,11 +104,12 @@ def get_clustered_faces(data):
         faces.append(face)
       montage = build_montages(faces,(96,96),(5,5))[0]
       #saving the montages in folders with their labelID so we can easily get the input and provide the score for the user
-      cv2.imwrite(montage_path+'/'+str(labelID+1)+'/',montage)
+      image_name = 'montage_'+str(labelID)+'.jpg'
+      cv2.imwrite(os.path.join(montage_path,image_name),montage)
     return clustered_faces
 
 
-def get_similarity score(clustered_faces,clus_num1,clus_num2):
+def get_similarity_score(clustered_faces,clus_num1,clus_num2):
     """
     gets the final score by comparing the two clusters as provided by the user.
     """
