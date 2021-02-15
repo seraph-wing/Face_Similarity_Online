@@ -90,7 +90,7 @@ def get_clustered_faces(data):
         faces.append(d)#contains face+encoding of same cluster
       clustered_faces.append(faces)
     #==========CREATING THE MONTAGE========================
-    montage_path = 'D:/Public projects/ML web apps/Face similarity/Face_Similarity_Online/face_similarity/media/montages'
+    montage_path = 'D:/Public projects/ML web apps/Face similarity/Face_Similarity_Online/face_similarity/media'
     for labelID in labelIDs:
       #print(f'[INFO] faces for face ID {labelID}')
       idxs = np.where(clt.labels_ == labelID)[0]
