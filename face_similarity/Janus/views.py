@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.views.generic import TemplateView
 from django.views.generic.edit import FormView
+from django.views import View
 from .forms import FileFieldForm
 from django.urls import reverse_lazy
 from PIL import Image
@@ -58,3 +59,17 @@ class FileFieldView(FormView):
             return self.form_valid(form)
         else:
             return self.form_invalid(form)
+
+
+class ShowClusters(TemplateView):
+    template_name = 'Janus/show_clusters.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        path = 'D:/Public projects/ML web apps/Face similarity/Face_Similarity_Online/face_similarity/media'
+        clusters = []
+        for montage in os.listdir(path):
+            if montage.endswith('.jpg'):
+                clusters.append(montage)
+        context['clusters'] = clusters
+        return context

@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+  {% for montage in clusters %}
+    <h4>Cluster {{forloop.counter0}}</h4>
+    <img src="{{ MEDIA_URL }}/{{montage}}" alt="montage" name ={{forloop.counter0}}>
+    <hr>
+  {% endfor %}
+  <h3>Enter the number of the first cluster you want to compare of:</h3>
+  <h3>Enter the number of the second cluster you want to compare of:</h3>
+{% endblock content %}
