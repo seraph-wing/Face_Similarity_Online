@@ -18,8 +18,10 @@ from django.urls import path,include
 from. import settings
 from django.conf.urls.static import static
 from django.views.generic.base import RedirectView
+import debug_toolbar
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('',RedirectView.as_view(url='janus/'),name='index'),
     path('janus/',include('Janus.urls')),
+    path('__debug__/', include(debug_toolbar.urls)),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
