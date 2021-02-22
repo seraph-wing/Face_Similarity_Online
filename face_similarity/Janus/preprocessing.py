@@ -66,6 +66,7 @@ def get_clustered_faces(data):
     """
     clustering all available faces from dataset created by create_dataset and building the montages for the clusters
     """
+    clustered_faces = []
     encodings = [d["encoding"] for d in data]
     print("[INFO] Clustering...")
     clt = DBSCAN(eps = 0.5, metric ='euclidean')
@@ -75,7 +76,6 @@ def get_clustered_faces(data):
     numUniqueFaces = len(np.where(labelIDs > -1)[0])
     print("[INFO] Number of unique faces: {}".format(numUniqueFaces))
     #================GETTING THE CLUSTERED FACES===============================
-    clustered_faces = []
     for labelID in labelIDs:
       #print("[INFO] Faces for face ID :{}".format(labelID))
       indexes = np.where(clt.labels_ == labelID)[0]
@@ -90,7 +90,8 @@ def get_clustered_faces(data):
         faces.append(d)#contains face+encoding of same cluster
       clustered_faces.append(faces)
     #==========CREATING THE MONTAGE========================
-    montage_path = 'D:/Public projects/ML web apps/Face similarity/Face_Similarity_Online/face_similarity/media'
+    montage_path = 'D:/Public projects/ML web apps/Face similarity/Face_Similarity_Online/face_similarity/media/montage'
+    os.mkdir(montage_path)
     for labelID in labelIDs:
       #print(f'[INFO] faces for face ID {labelID}')
       idxs = np.where(clt.labels_ == labelID)[0]
@@ -106,13 +107,20 @@ def get_clustered_faces(data):
       #saving the montages in folders with their labelID so we can easily get the input and provide the score for the user
       image_name = 'montage_'+str(labelID)+'.jpg'
       cv2.imwrite(os.path.join(montage_path,image_name),montage)
+      f = open('cluster_Data.pickle','wb+')
+      f.write(pickle.dumps(clustered_faces))
+      f.close()
     return clustered_faces
 
 
-def get_similarity_score(clustered_faces,clus_num1,clus_num2):
+def get_similarity_score(clus_num1,clus_num2):
     """
     gets the final score by comparing the two clusters as provided by the user.
     """
+    data_path = 'cluster_Data.pickle'
+    data = pickle.loads(open(data_path, "rb").read())
+    clustered_faces = np.array(data,dtype=object)
+
     face_list1 = clustered_faces[clus_num1]
     face_list2 = clustered_faces[clus_num2]
     distance_matrix = np.zeros((len(face_list1),len(face_list2)))

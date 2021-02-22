@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="jumbotron text-center">
+
+  {% if messages %}
+  <div class="messages">
+      {% for message in messages %}
+      <h1 {% if message.tags %} class="{{ message.tags }}"{% endif %}>The selected faces are {{ message }} % similar!</h1>
+      {% endfor %}
+  </div>
+</div>
+{%endif%}
+<a href="{% url 'janus:upload' %}" class="btn btn-success" >Check another!</a>
+{% endblock content %}

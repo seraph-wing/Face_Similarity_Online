@@ -2,12 +2,15 @@ from django.shortcuts import render
 from django.views.generic import TemplateView
 from django.views.generic.edit import FormView
 from django.views import View
-from .forms import FileFieldForm
+from .forms import FileFieldForm,ShowClusersForm
 from django.urls import reverse_lazy
 from PIL import Image
 from datetime import datetime
 import os
 from . import preprocessing
+import shutil
+from django.contrib import messages
+from django.contrib.messages.views import SuccessMessageMixin
 # Create your views here.
 
 def save_to_sys(files,k,path):
@@ -35,7 +38,7 @@ class Janus_API():
 class FileFieldView(FormView):
     form_class = FileFieldForm
     template_name = 'Janus/upload.html'  # Replace with your template.
-    success_url = reverse_lazy('janus:home')  # Replace with your URL or reverse().
+    success_url = reverse_lazy('janus:show_clusters')  # Replace with your URL or reverse().
 
     def post(self, request, *args, **kwargs):
         form_class = self.get_form_class()
@@ -61,15 +64,40 @@ class FileFieldView(FormView):
             return self.form_invalid(form)
 
 
-class ShowClusters(TemplateView):
+class ShowClusters(FormView,SuccessMessageMixin):
+    form_class = ShowClusersForm
     template_name = 'Janus/show_clusters.html'
+    success_url = reverse_lazy('janus:score')
+    #success_message = 'hellow there!'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        path = 'D:/Public projects/ML web apps/Face similarity/Face_Similarity_Online/face_similarity/media'
+        path = 'D:/Public projects/ML web apps/Face similarity/Face_Similarity_Online/face_similarity/media/montage'
+        #os.mkdir(path)
         clusters = []
         for montage in os.listdir(path):
             if montage.endswith('.jpg'):
-                clusters.append(montage)
+                clusters.append('montage/'+montage)
         context['clusters'] = clusters
+        #print(self.request.POST.get('cluster1'))
         return context
+
+    def post(self,*args,**kwargs):
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+        clus1 = self.request.POST.get('cluster_1')
+        clus2 = self.request.POST.get('cluster_2')
+        path = 'D:/Public projects/ML web apps/Face similarity/Face_Similarity_Online/face_similarity/media/montage'
+        if form.is_valid():
+            #FIND SCORE BASED ON CLUSTERS
+            print(int(clus1))
+            print(int(clus2))
+            score = preprocessing.get_similarity_score(int(clus1),int(clus2))
+            print(score*100)
+            messages.add_message(self.request, messages.INFO, str(score*100))
+            shutil.rmtree(path)
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
+class ShowScore(TemplateView):
+    template_name = 'Janus/show_score.html'
