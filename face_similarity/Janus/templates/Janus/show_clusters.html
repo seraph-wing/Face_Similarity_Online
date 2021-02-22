@@ -2,22 +2,14 @@
 {% load static %}
 {% load crispy_forms_tags %}
 {% block content %}
-  {% if messages %}
-  <ul class="messages">
-      {% for message in messages %}
-      <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-      {% endfor %}
-  </ul>
-  {%else%}
-    {% for montage in clusters %}
-      <h4>Cluster {{forloop.counter0}}</h4>
-      <img src="{{ MEDIA_URL }}/{{montage}}" alt="montage" name ={{forloop.counter0}}>
-      <hr>
-    {% endfor %}
-    <form class="cluster_form" method="post">
-      {% csrf_token %}
-      {{form|crispy}}
-      <input type="submit" value="Show score!">
-    </form>
-  {% endif %}
+  {% for montage in clusters %}
+    <h4>Cluster {{forloop.counter0}}</h4>
+    <img src="{{ MEDIA_URL }}/{{montage}}" alt="montage" name ={{forloop.counter0}}>
+    <hr>
+  {% endfor %}
+  <form class="cluster_form" method="post">
+    {% csrf_token %}
+    {{form|crispy}}
+    <input type="submit" value="Show score!">
+  </form>
 {% endblock content %}

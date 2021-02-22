@@ -10,6 +10,7 @@ import os
 from . import preprocessing
 import shutil
 from django.contrib import messages
+from django.contrib.messages.views import SuccessMessageMixin
 # Create your views here.
 
 def save_to_sys(files,k,path):
@@ -63,10 +64,11 @@ class FileFieldView(FormView):
             return self.form_invalid(form)
 
 
-class ShowClusters(FormView):
+class ShowClusters(FormView,SuccessMessageMixin):
     form_class = ShowClusersForm
     template_name = 'Janus/show_clusters.html'
-    success_url = reverse_lazy('janus:home')
+    success_url = reverse_lazy('janus:score')
+    #success_message = 'hellow there!'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -92,8 +94,10 @@ class ShowClusters(FormView):
             print(int(clus2))
             score = preprocessing.get_similarity_score(int(clus1),int(clus2))
             print(score*100)
-            messages.success(self.request,str(score*100))
+            messages.add_message(self.request, messages.INFO, str(score*100))
             shutil.rmtree(path)
             return self.form_valid(form)
         else:
             return self.form_invalid(form)
+class ShowScore(TemplateView):
+    template_name = 'Janus/show_score.html'
