@@ -128,5 +128,5 @@ def get_similarity_score(clus_num1,clus_num2):
       for (j,img2) in enumerate(face_list2[:]):
         distance_matrix[i][j] = distance.sqeuclidean(img1['encoding'],img2['encoding'])
     mean = np.mean(distance_matrix)
-    standardized_mean = (mean - distance_matrix.min())/(distance_matrix.max()-distance_matrix.min())
-    return 1/(1+standardized_mean)
+    #standardized_mean = (mean - distance_matrix.min())/(distance_matrix.max()-distance_matrix.min())
+    return (1-mean)
